@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useReducer, useState, useEffect } from 'react
 import { useSocket } from '../../custom-hooks/useSocket';
 import { SocketContextProvider, SocketReducer, defaultSocketContextState } from './SocketContext'; // custom by meee
 import { useAuth0 } from '@auth0/auth0-react';
-import { User } from './SocketContext';
+import { User, Ready } from './SocketContext';
 
 import axios from 'axios';
 
@@ -218,6 +218,16 @@ const SocketComponent: React.FunctionComponent<ISocketComponentProps> = (props) 
     socket.emit('update_game_status', user, status);
   };
 
+  const AddGameStats = (user: any) => {
+    socket.emit('game_stats', user);
+  }
+
+  // local storage of Ready Status
+  const UpdateReady = (ready: Ready) => {
+    SocketDispatch({ type: 'update_ready', payload: ready });
+    socket.emit('update_ready', ready);
+  }
+
 
   // showing this on client side while socket isn't connected
   if (loading) {
@@ -227,7 +237,10 @@ const SocketComponent: React.FunctionComponent<ISocketComponentProps> = (props) 
   // provides the socket context to the nested components
   // this will be placed around the components in index.tsx so all of the components can use this socket connection
   return (
-    <SocketContextProvider value={{ SocketState, SocketDispatch, CreateGame, AddLocation, JoinGame, Redirect, SetHunted, LeaveGame, UpdateGameStatus }}>
+    <SocketContextProvider value={{
+      SocketState, SocketDispatch, CreateGame, AddLocation, JoinGame, Redirect, SetHunted, LeaveGame, UpdateGameStatus,
+      AddGameStats, UpdateReady,
+    }}>
       {children}
     </SocketContextProvider>
   )
