@@ -1,37 +1,37 @@
 import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
-import { createServer } from "http";
-// import { createServer } from 'https';
+// import { createServer } from "http";
+import { createServer } from 'https';
 import { ServerSocket } from './websocket/socket';
 const { Users } = require("./routes/users");
 const { Trophies } = require('./routes/trophies');
 import { Games } from './routes/game';
 import { Location } from './routes/locations';
 import { Friends } from './routes/friends'
-
+import fs from 'fs';
 
 dotenv.config();
 
 const dist = path.resolve(__dirname, '..', 'client');
 const app = express();
 
-// HTTP SERVER
-const httpServer = createServer(app);
+// // HTTP SERVER
+// const httpServer = createServer(app);
 
-// // HTTPS SERVER
-// const options = {
-//   key: fs.readFileSync('localhost-key.pem'),
-//   cert: fs.readFileSync('localhost.pem')
-// };
-// // HTTPS SERVER
-//const httpsServer = createServer(options, app);
+ // HTTPS SERVER
+const options = {
+  key: fs.readFileSync('localhost-key.pem'),
+  cert: fs.readFileSync('localhost.pem')
+};
+ // HTTPS SERVER
+const httpsServer = createServer(options, app);
 
 
-// start the socket HTTP
-new ServerSocket(httpServer);
-// // start the socket HTTPS
-// new ServerSocket(httpsServer);
+// // start the socket HTTP
+//new ServerSocket(httpServer);
+// start the socket HTTPS
+new ServerSocket(httpsServer);
 
 
 const port = process.env.PORT || 3666;
@@ -59,12 +59,12 @@ app.get('*', (req, res) => {
   });
 });
 
-// HTTP SERVER
-httpServer.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
-
-// // HTTPS SERVER
-// httpsServer.listen(port, () => {
-//   console.log(`Https server listening on port ${port}`);
+// // HTTP SERVER
+// httpServer.listen(port, () => {
+//   console.log(`Server listening on port ${port}`);
 // });
+
+// HTTPS SERVER
+httpsServer.listen(port, () => {
+  console.log(`Https server listening on port ${port}`);
+});
